@@ -1,41 +1,84 @@
+
+
 const calcBody = document.querySelector("#container");
 const display = document.querySelector("#display");
-const one = document.querySelector("#one");
-let firstNumber;
+const numberButtons = document.querySelectorAll(".number")
+const operatorButtons = document.querySelectorAll(".operator")
+const equalsButton = document.querySelector("#equals")
+const clearDisplay = document.querySelector("#C")
 
+console.log(operatorButtons)
+let firstNumber = '';
+let secondNumber = '';
+let presentNumber = '';
+let operatingOperator = '';
+let sum;
 
-one.addEventListener('click', () => {
-    display.textContent = '1';
+//number button entry logic
+numberButtons.forEach(numberButton => {
+    numberButton.addEventListener('click', () => {
+        presentNumber += numberButton.textContent;
+        display.textContent = presentNumber;
+    });
 });
 
-two.addEventListener('click', () => {
-    display.textContent = '2';
+// stores first number entered when operator is pressed
+operatorButtons.forEach(operatorButton => {
+    operatorButton.addEventListener('click', () => {
+        firstNumber = Number(presentNumber);
+        operatingOperator = operatorButton.textContent;
+        display.textContent = operatingOperator;
+        presentNumber = '';
+    });
 });
 
-three.addEventListener('click', () => {
-    display.textContent = '3';
+//equals button
+equalsButton.addEventListener('click', () => {
+    secondNumber = Number(presentNumber);
+    operate(firstNumber, operatingOperator, secondNumber);
+    display.textContent = sum;
 });
 
-four.addEventListener('click', () => {
-    display.textContent = '4';
-});
+// operation function
+function operate(numOne, operator, numTwo) {
+    if (operator === '+') {
+        add(numOne, numTwo)
+    } else if (operator === '-') {
+        subtract(numOne, numTwo)
+    } else if (operator === 'X') {
+        multiply(numOne, numTwo)
+    } else {
+        divide(numOne, numTwo)
+    };
+    display.textContent = sum;
+    presentNumber = '';
+    firstNumber = '';
+    secondNumber = '';
+    operatingOperator = '';
+};
 
-five.addEventListener('click', () => {
-    display.textContent = '5';
-});
+clearDisplay.addEventListener('click', () => {
+    presentNumber = '';
+    firstNumber = '';
+    secondNumber = '';
+    operatingOperator = '';
+    display.textContent = '0';
+})
 
-six.addEventListener('click', () => {
-    display.textContent = '6';
-});
+// basic operation functions
+const add = function(x, y) {
+    return sum = (x + y);
+};
 
-seven.addEventListener('click', () => {
-    display.textContent = '7';
-});
+const multiply = function(x, y) {
+    return sum = (x * y);
+};
 
-eight.addEventListener('click', () => {
-    display.textContent = '8';
-});
+const divide = function(x, y) {
+    return sum = (x / y);
+};
 
-nine.addEventListener('click', () => {
-    display.textContent = '9';
-});
+const subtract = function(x, y) {
+    return sum = (x - y);
+};
+
