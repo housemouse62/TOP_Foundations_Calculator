@@ -29,11 +29,12 @@ function roundResult(nmbr) {
 numberButtons.forEach(numberButton => {
     numberButton.addEventListener('click', () => {
         if (presentNumber.length <= 10) {
-        presentNumber += Number(numberButton.textContent);
+        presentNumber += numberButton.textContent;
         } else {
             Number(presentNumber);
         }
         currentDisplay(presentNumber);
+        console.log(typeof presentNumber)
     });
 });
 
@@ -42,6 +43,10 @@ numberButtons.forEach(numberButton => {
 operatorButtons.forEach(operatorButton => {
     operatorButton.addEventListener('click', () => {
         operatingOperator = operatorButton.textContent;
+        if (presentNumber === '') {
+            operatingOperator = operatorButton.textContent;
+            return;
+        }
         if (waitingForFirstNumber === true) {
             storedNumber = Number(presentNumber);
             presentNumber = '';
@@ -53,11 +58,12 @@ operatorButtons.forEach(operatorButton => {
             let result = operate(storedNumber, operatingOperator, presentNumber);
             storedNumber = Number(result);
             let roundedResult = roundResult(result);
+            presentNumber = '';
             currentDisplay(roundedResult);
             console.log({result});
             console.log({storedNumber})
             console.log({presentNumber})
-            presentNumber = '';
+            
         }
         // currentDisplay(operatingOperator);
         presentNumber = '';
@@ -72,10 +78,11 @@ equalsButton.addEventListener('click', () => {
         presentNumber;
     } else if (waitingForFirstNumber === false) {
             let result = operate(storedNumber, operatingOperator, presentNumber);
-   //         storedNumber = Number(result);
-   //         presentNumber = 0;
-            // let roundedResult = roundResult(result);
-            // currentDisplay(roundedResult);
+            storedNumber = Number(result);
+            presentNumber = '';
+            let roundedResult = roundResult(result);
+            currentDisplay(roundedResult);
+            waitingForFirstNumber = true;
             console.log({result});
             console.log({presentNumber});
             console.log({storedNumber});
