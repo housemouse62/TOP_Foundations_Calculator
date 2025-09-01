@@ -5,25 +5,38 @@ const operatorButtons = document.querySelectorAll(".operator")
 const equalsButton = document.querySelector("#equals")
 const clearDisplay = document.querySelector("#C")
 const clearCurrent = document.querySelector("#CE")
+const decimal = document.querySelector("dot")
 
-let firstNumber = '';
-let secondNumber = '';
+
 let presentNumber = '';
-let operatingOperator = '';
 let storedNumber = '';
+let operatingOperator = '';
+let lastOperator;
+let lastSecondNumber;
 let waitingForFirstNumber = true;
 let sumDisplay;
 
 //current display
 function currentDisplay(value) {
     display.textContent = value;
-}
+};
 
 // Rounding Function
-function roundResult(nmbr) {
-    console.log({nmbr})
-    return roundedNumber = Math.round((nmbr * 1000000000)/1000000000)
-}
+function formatResult(num) {
+    let str = String(num);
+
+    if (str.length < 11) return str;
+
+    if (str.includes('.')) {
+        const [intPart, decPart] = str.split('.');
+        const availableDecimals = 11 - (intPart.length + 1);
+        if (availableDecimals > 0) {
+            return Number(num).toFixed(availableDecimals).slice(0, 11);
+        }
+    }
+
+    return Number(num).toExponential(5);
+};
 
 //number button entry logic for display
 numberButtons.forEach(numberButton => {
@@ -32,7 +45,12 @@ numberButtons.forEach(numberButton => {
         presentNumber += numberButton.textContent;
         } else {
             Number(presentNumber);
-        }
+        };
+
+        if (presentNumber.includes('.')) {
+            document.getElementById("dot").disabled = true;
+        };
+
         currentDisplay(presentNumber);
         console.log(typeof presentNumber)
     });
@@ -42,55 +60,68 @@ numberButtons.forEach(numberButton => {
 // stores first number entered to storedNumber when operator is pressed
 operatorButtons.forEach(operatorButton => {
     operatorButton.addEventListener('click', () => {
-        operatingOperator = operatorButton.textContent;
-        if (presentNumber === '') {
+        const op = operatorButton.textContent;
+
+        if (waitingForFirstNumber && presentNumber === '') {
             operatingOperator = operatorButton.textContent;
             return;
-        }
-        if (waitingForFirstNumber === true) {
+        };
+
+        if (waitingForFirstNumber && presentNumber !== '') {
             storedNumber = Number(presentNumber);
             presentNumber = '';
+            operatingOperator = op;
             waitingForFirstNumber = false;
-            console.log({presentNumber});
-            console.log({storedNumber});
-            console.log(waitingForFirstNumber)
-        } else if (waitingForFirstNumber === false) {
-            let result = operate(storedNumber, operatingOperator, presentNumber);
-            storedNumber = Number(result);
-            let roundedResult = roundResult(result);
-            presentNumber = '';
-            currentDisplay(roundedResult);
-            console.log({result});
-            console.log({storedNumber})
-            console.log({presentNumber})
+
+            lastOperator = '';
+            lastSecondNumber = '';
+            return;
+        };
+        
+        if (presentNumber === '') {
+            operatingOperator = op;
+            lastOperator = '';
+            lastSecondNumber = '';
+            return;
+        }
+
+        const b = Number(presentNumber);
+        const opUsed = operatingOperator || op;
+        const result = operate(storedNumber, opUsed, b);
+
+        storedNumber = Number(result);
+        presentNumber = '';
+        currentDisplay(formatResult(result));
+
+        operatingOperator = op;
             
         }
-        // currentDisplay(operatingOperator);
-        presentNumber = '';
-    });
-});
+)});
 
 //equals button
 equalsButton.addEventListener('click', () => {
-    if (waitingForFirstNumber === true) {
-        presentNumber;
-    } else if (waitingForFirstNumber === false && (presentNumber === 0 || presentNumber === '')) {
-        presentNumber;
-    } else if (waitingForFirstNumber === false) {
-            let result = operate(storedNumber, operatingOperator, presentNumber);
+    if (waitingForFirstNumber) return;
+
+    if (presentNumber !== '') {
+        const b = Number(presentNumber);
+        const opUsed = operatingOperator || lastOperator;
+        if (!opUsed) return;
+
+        const result = operate(storedNumber, opUsed, b);
             storedNumber = Number(result);
             presentNumber = '';
-            let roundedResult = roundResult(result);
-            currentDisplay(roundedResult);
-            waitingForFirstNumber = true;
-            console.log({result});
-            console.log({presentNumber});
-            console.log({storedNumber});
-            console.log({waitingForFirstNumber})
-    } else {
-        presentNumber;
-    }
-  //  storedNumber = roundedResult;
+            currentDisplay(formatResult(result));
+            lastOperator = opUsed;
+            lastSecondNumber = b;
+            return;
+    };
+
+    if (lastOperator !== '' && lastSecondNumber !== '') {
+            const result = operate(storedNumber, lastOperator, lastSecondNumber);
+            storedNumber = Number(result);
+            currentDisplay(formatResult(result));
+    };
+
 });
 
 // operation function
@@ -113,9 +144,6 @@ clearDisplay.addEventListener('click', () => {
     operatingOperator = '';
     waitingForFirstNumber = true;
     currentDisplay('0');
-    console.log({storedNumber})
-    console.log({presentNumber})
-    console.log(waitingForFirstNumber)
 })
 
 //clear current number

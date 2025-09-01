@@ -41,6 +41,11 @@ body {
     gap: 110px;
     padding-bottom: 10px;
     font-family:Verdana, Geneva, Tahoma, sans-serif;
+    color: #0445B3;
+}
+
+img {
+    height: 40px;
 }
 
 #solarPanel {
@@ -50,6 +55,7 @@ body {
     border: black 2px solid;
     border-radius: 5px;;
 }
+
 #buttons {
     display: flex;
     flex-direction: column;
@@ -59,6 +65,7 @@ body {
 button {
     box-shadow: 0 3px #3a5886;
 }
+
 button:active {
     box-shadow:0 1px #666;
     transform: translateY(2px);
@@ -97,6 +104,6 @@ button:active {
     border-top-left-radius: 15px;
     border-bottom-left-radius: 30px;
     border-bottom-right-radius: 30px;
-    width: 100%;
+    width: 95%;
 }
 
