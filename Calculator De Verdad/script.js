@@ -10,6 +10,8 @@ let firstNumber = '';
 let secondNumber = '';
 let presentNumber = '';
 let operatingOperator = '';
+let storedNumber = '';
+let waitingForFirstNumber = true;
 let sumDisplay;
 
 //current display
@@ -23,41 +25,65 @@ function roundResult(nmbr) {
     return roundedNumber = Math.round((nmbr * 1000000000)/1000000000)
 }
 
-//number button entry logic
+//number button entry logic for display
 numberButtons.forEach(numberButton => {
     numberButton.addEventListener('click', () => {
         if (presentNumber.length <= 10) {
-        presentNumber += numberButton.textContent;
+        presentNumber += Number(numberButton.textContent);
         } else {
-            presentNumber;
+            Number(presentNumber);
         }
         currentDisplay(presentNumber);
     });
 });
 
 
-// stores first number entered when operator is pressed
+// stores first number entered to storedNumber when operator is pressed
 operatorButtons.forEach(operatorButton => {
     operatorButton.addEventListener('click', () => {
-        firstNumber = Number(presentNumber);
         operatingOperator = operatorButton.textContent;
-        currentDisplay(operatingOperator);
+        if (waitingForFirstNumber === true) {
+            storedNumber = Number(presentNumber);
+            presentNumber = '';
+            waitingForFirstNumber = false;
+            console.log({presentNumber});
+            console.log({storedNumber});
+            console.log(waitingForFirstNumber)
+        } else if (waitingForFirstNumber === false) {
+            let result = operate(storedNumber, operatingOperator, presentNumber);
+            storedNumber = Number(result);
+            let roundedResult = roundResult(result);
+            currentDisplay(roundedResult);
+            console.log({result});
+            console.log({storedNumber})
+            console.log({presentNumber})
+            presentNumber = '';
+        }
+        // currentDisplay(operatingOperator);
         presentNumber = '';
     });
 });
 
 //equals button
 equalsButton.addEventListener('click', () => {
-    secondNumber = Number(presentNumber);
-    let result = operate(firstNumber, operatingOperator, secondNumber);
-    console.log(result)
-    let roundedResult = roundResult(result);
-    currentDisplay(roundedResult);
-
-    presentNumber = roundedResult;
-    firstNumber = '';
-    secondNumber = '';
-    operatingOperator = '';
+    if (waitingForFirstNumber === true) {
+        presentNumber;
+    } else if (waitingForFirstNumber === false && (presentNumber === 0 || presentNumber === '')) {
+        presentNumber;
+    } else if (waitingForFirstNumber === false) {
+            let result = operate(storedNumber, operatingOperator, presentNumber);
+   //         storedNumber = Number(result);
+   //         presentNumber = 0;
+            // let roundedResult = roundResult(result);
+            // currentDisplay(roundedResult);
+            console.log({result});
+            console.log({presentNumber});
+            console.log({storedNumber});
+            console.log({waitingForFirstNumber})
+    } else {
+        presentNumber;
+    }
+  //  storedNumber = roundedResult;
 });
 
 // operation function
@@ -76,10 +102,13 @@ function operate(numOne, operator, numTwo) {
 //clear math & display
 clearDisplay.addEventListener('click', () => {
     presentNumber = '';
-    firstNumber = '';
-    secondNumber = '';
+    storedNumber = '';
     operatingOperator = '';
+    waitingForFirstNumber = true;
     currentDisplay('0');
+    console.log({storedNumber})
+    console.log({presentNumber})
+    console.log(waitingForFirstNumber)
 })
 
 //clear current number
@@ -90,7 +119,7 @@ clearCurrent.addEventListener('click', () => {
 
 // basic operation functions
 const add = function(x, y) {
-    return sum = (x + y);
+    return sum = (Number(x) + Number(y));
 };
 
 const multiply = function(x, y) {
@@ -98,8 +127,11 @@ const multiply = function(x, y) {
 };
 
 const divide = function(x, y) {
+    if ( y === '0' || y === 0) {
+        currentDisplay("You can't divide by 0, ya nut!");
+    } else {
     return sum = (x / y);
-};
+}};
 
 const subtract = function(x, y) {
     return sum = (x - y);
